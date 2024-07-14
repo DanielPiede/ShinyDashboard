@@ -15,6 +15,7 @@ cancer_types = sorted(dm.get_cancer_types())
 units = sorted(dm.get_units())
 years = sorted(dm.get_years())
 data_dictionary = dm.get_data_dictionary()
+data = dm.get_data()
 
 @module.ui
 def map_ui():
@@ -75,13 +76,22 @@ def map_server(input, output, session: Session):
             hover_style={"color": "blue", "dashArray": "0", "fillOpacity": 0.5},
         )
         
+        def get_data_column():
+            if input.units_map() == "Total Number":
+                return data.columns[data.columns.str.contains('_n') & data.columns.str.contains(str.lower(input.cancer_type_map().split(' ')[0]))]
+            else:
+                return data.columns[data.columns.str.contains('_incidence') & data.columns.str.contains(str.lower(input.cancer_type_map().split(' ')[0]))]
+        
+        
         def on_click(event, feature, **kwargs):
             country_name = feature["properties"]["name"]
             pos = cm.get_centroid(country_name)
+            col = get_data_column()
+            mask = (data["year"] == int(input.year_map())) & (data["country"] == country_name)
             pop_html = HTML()
             pop_html.value = f"""
                 <h6>{country_name}</h6>
-                <p></p>
+                <p>{str(data[mask][col].values[0][0])}</p>
                 """
             current_popup = Popup(
                 location = pos,

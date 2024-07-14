@@ -51,7 +51,7 @@ class DataModel():
     
     def get_data(self):
         self.clean_column_names()
-        self.data = self.data.dropna()
+        self.data = self.data.fillna(0)
         return self.data
     
     def get_cancer_types(self):
