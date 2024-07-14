@@ -4,8 +4,10 @@ from shinywidgets import output_widget, render_widget
 from ipywidgets import HTML
 from data_model import DataModel, CountryModel
 import json
+import urllib.request
 
-# Loading data from the DataModel module.
+
+# Loading data with the DataModel and CountryModel classes.
 dm = DataModel()
 cm = CountryModel()
 
@@ -28,10 +30,11 @@ def map_ui():
                 title="Map Filters:",
                 bg="#ffffff",
             ),
-            output_widget("map", height="500px", width="100%"),
+            output_widget("map"),
         ),
         ui.card_footer(ui.output_text("map_footer")),
-        height="auto",
+        full_screen= True,
+        height="75vh",
     )
     return container
 
@@ -50,17 +53,16 @@ def map_server(input, output, session: Session):
             text = data_dictionary.get(input.cancer_type_map(), "Filters are applied.")
         else:
             text = "Filters are applied."
-        return text
-
-
-    
+        return text    
     
     @render_widget
     def map():
-        m = Map(zoom=3, center=(0, 0), scroll_wheel_zoom=True)
+        m = Map(zoom=3.5, 
+                center=(50, 10), 
+                scroll_wheel_zoom=True)
         
-        with open("countries.geojson") as f:
-            geo = json.load(f)
+        with urllib.request.urlopen("https://raw.githubusercontent.com/DanielPiede/ShinyDashboard/main/raw/countries.geojson") as url:
+            geo = json.load(url)
         
         geo_json_layer = GeoJSON(
             data=geo,
@@ -93,5 +95,3 @@ def map_server(input, output, session: Session):
         geo_json_layer.on_click(on_click)
         m.add_layer(geo_json_layer)
         return m
-
-# Check the console output for the hovered country names

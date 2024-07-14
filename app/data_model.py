@@ -102,7 +102,7 @@ class CountryModel():
     This class contains country data for centroid localization.
     """
     
-    file_url = r"https://raw.githubusercontent.com/gavinr/world-countries-centroids/master/dist/countries.csv"
+    file_url = r"https://raw.githubusercontent.com/DanielPiede/ShinyDashboard/main/raw/country_centroids.csv"
     
     def __init__(self) -> None:
         self.centroids = pd.read_csv(CountryModel.file_url).iloc[:,0:3]

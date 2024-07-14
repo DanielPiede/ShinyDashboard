@@ -2,6 +2,7 @@ from shiny import App, Inputs, Outputs, Session, render, ui, reactive
 import map, plot, data_table
 import shinyswatch
 
+
 # Defining the header for the dashboard UI.
 header = ui.panel_title(title="OECD Cancer Statistics Dashboard: Incidence Rates, Screening Coverage, and Key Numbers")
 
