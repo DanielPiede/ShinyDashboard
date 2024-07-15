@@ -1,16 +1,18 @@
 import pandas as pd
 
+#----------------------------------------------------------------
 # Decided to create a separate module for the data loading and preparation part. 
 # This helps with readibility and maintainability, and steps are easier to understand.
+#----------------------------------------------------------------
 
 class DataModel():
     """
-    The DataModel class provides methods to load, prepare, and retrieve data.
+    The DataModel class provides methods to load, prepare, and retrieve data obtained from github.
     """
 
     file_url = "https://raw.githubusercontent.com/drpawelo/data/main/health/OCED_simplified.csv"
     
-    # Dictionary that shortens the originally long column names.
+    # Dictionary to shorten the originally very long column names.
     rename_dict = {
         "Cervical cancer screening, programme data_% of females aged 20-69 screened": "cervical_cancer_screening_%f2069",
         "Breast cancer screening, programme data_% of females aged 50-69 screened" : "breast_cancer_screening_%f5069",
@@ -37,24 +39,40 @@ class DataModel():
         "Other Malignant neoplasms_Per 100 000 population": "other_cancer_incidence"
     }
     
-    def __init__(self):
+    def __init__(self) -> None:
+        # reading data from url into csv.
         df = pd.read_csv(DataModel.file_url)
-    
+
+        # Reduce data to the subset needed in this use case.
         mask = ["year", "country"] + list(df.columns[(df.columns.str.contains('Malignant')) & 
                 (df.columns.str.contains('Per 100 000') | df.columns.str.contains('Number')) | 
                 (df.columns.str.contains('screening') & df.columns.str.contains('programme'))])
         
+        # Storing the data in an attribute.
         self.data = df[mask]
     
-    def clean_column_names(self):
+    def clean_column_names(self) -> None:
+        """
+        Applying the clean column names from the dictionary to the dataset.
+        """
         self.data = self.data.rename(columns= DataModel.rename_dict)
     
-    def get_data(self):
+    def get_data(self) -> pd.DataFrame:
+        """
+        Cleans the column names and returns a dataframe that does not contain NaN values.
+        Returns:
+            _type_: pd.DataFrame
+        """
         self.clean_column_names()
         self.data = self.data.fillna(0)
         return self.data
     
-    def get_cancer_types(self):
+    def get_cancer_types(self) -> list[str]:
+        """
+        Creates a list of easy to read cancer types.
+        Returns:
+            _type_: list[str]
+        """
         self.clean_column_names()
         cancer_types = []
         for column in self.data.columns[2:]:
@@ -62,29 +80,39 @@ class DataModel():
         cancer_types.remove("Cervical Cancer") # Only exists for screenings.
         return list(set(cancer_types))
     
-    def get_units(self):
+    def get_units(self) -> list[str]:
+        """
+        Creates a list of easy to read units for filtering.
+        Returns:
+            _type_: list[str]
+        """
         units = ["Total Number",
                     "Incidence per 100.000"]
         return sorted(units)
     
-    def get_measures(self):
-        measures = ["Screening",
-                    "Confirmed Cases"]
-        return measures
-    
-    def get_data_dictionary(self):
+    def get_data_dictionary(self) -> dict:
+        """
+        Creates a dictionary with additional Information for certain cancer types that would otherwise be hidden from the user.
+        Returns:
+            _type_: dict
+        """
         infos = {
             "Cervical Screening": "Cervical cancer screening is calculated as a % of women between 20 and 69 years old.",
             "Breast Screening": "Breast cancer screening is calculated as a % of women between 50 and 69 years old.",
             "Colorectal Screening": "Colorectal cancer screening is calculated as a % of man and women between 50 and 74 years old.",
             "Ovarian Cancer": "Reflects incidence per 100.000 women.",
-            "Uterine cancer": "Reflects incidence per 100.000 women.",
+            "Uterine Cancer": "Reflects incidence per 100.000 women.",
             "Breast Cancer": "Reflects incidence per 100.000 women.",
             "Prostate Cancer": "Reflects incidence per 100.000 man.",
         }
         return infos
     
-    def get_screenings(self):
+    def get_screenings(self) -> list[str]:
+        """
+        Creates a list of easy to read screenings. For filtering purposes.
+        Returns:
+            _type_: list[str]
+        """
         self.clean_column_names()
         columns = list(self.data.columns[self.data.columns.str.contains("screening")])
         screenings = []
@@ -92,24 +120,36 @@ class DataModel():
             screenings.append(' '.join([word.capitalize() for word in words.split('_')[:2]]) + " Screening")
         return list(set(screenings))
     
-    def get_years(self):
+    def get_years(self) -> list[int]:
+        """
+        Creates a list of years for filtering.
+        Returns:
+            _type_: list[int]
+        """
         return list(sorted(set(self.data["year"])))
     
-    def get_countries(self):
+    def get_countries(self) -> list[str]:
+        """
+        Creates a list of countries for filtering.
+        Returns:
+            _type_: list[str]
+        """
         return list(sorted(set(self.data["country"])))
 
 
     
 class CountryModel():
     """
-    This class contains country data for centroid localization.
+    This class contains centroid localization for countries.
     """
     
     file_url = r"https://raw.githubusercontent.com/DanielPiede/ShinyDashboard/main/raw/country_centroids.csv"
     
     def __init__(self) -> None:
+        # Loarding the data on centroids from a csv in github.
         self.centroids = pd.read_csv(CountryModel.file_url).iloc[:,0:3]
     
     def get_centroid(self, country: str) -> tuple:
+        # Get the position for a specific country (reversed order, to match latitude and longitude on maps.)
         pos = self.centroids[self.centroids["COUNTRY"] == country]
         return tuple(reversed(pos.values[0][:2]))
