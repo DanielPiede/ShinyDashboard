@@ -4,12 +4,20 @@ import shinyswatch
 
 
 # Defining the header for the dashboard UI.
-header = ui.panel_title(title="OECD Cancer Statistics Dashboard: Incidence Rates, Screening Coverage, and Key Numbers")
+header = ui.panel_title(
+    ui.div(
+        ui.p(),
+        ui.h3("OECD Cancer Statistics Dashboard:"),
+        ui.h5("Incidence Rates, Screening Information, and Key Numbers"),
+        ui.hr(),
+        ),
+    
+)
 
 # Defining the body for the dashboard UI. Each of the three components is defined as a module for readability.
-body = ui.navset_pill(
+body = ui.navset_card_pill(
     ui.nav_panel(
-        "OECD Map",
+        "Interactive Map",
         ui.tags.p(),
         map.map_ui("map"),
     ),
@@ -34,6 +42,7 @@ app_ui = ui.page_fluid(
 
 def server(input: Inputs, output: Outputs, session: Session):
     map.map_server("map")
+    data_table.data_table_server("data_table")
 
 
 app = App(app_ui, server)

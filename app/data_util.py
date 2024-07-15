@@ -65,7 +65,7 @@ class DataModel():
     def get_units(self):
         units = ["Total Number",
                     "Incidence per 100.000"]
-        return units
+        return sorted(units)
     
     def get_measures(self):
         measures = ["Screening",
@@ -93,7 +93,10 @@ class DataModel():
         return list(set(screenings))
     
     def get_years(self):
-        return list(set(self.data["year"]))
+        return list(sorted(set(self.data["year"])))
+    
+    def get_countries(self):
+        return list(sorted(set(self.data["country"])))
 
 
     

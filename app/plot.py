@@ -1,6 +1,6 @@
 from shiny import ui, module, reactive, Session, render
 from shinywidgets import output_widget, register_widget
-from data_model import DataModel
+from data_util import DataModel
 
 
 @module.ui
