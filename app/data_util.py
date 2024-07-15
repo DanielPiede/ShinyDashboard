@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 
 #----------------------------------------------------------------
 # Decided to create a separate module for the data loading and preparation part. 
@@ -9,8 +10,7 @@ class DataModel():
     """
     The DataModel class provides methods to load, prepare, and retrieve data obtained from github.
     """
-
-    file_url = "https://raw.githubusercontent.com/drpawelo/data/main/health/OCED_simplified.csv"
+    file_path = Path(__file__).parent / "OCED_simplified.csv"
     
     # Dictionary to shorten the originally very long column names.
     rename_dict = {
@@ -41,7 +41,7 @@ class DataModel():
     
     def __init__(self) -> None:
         # reading data from url into csv.
-        df = pd.read_csv(DataModel.file_url)
+        df = pd.read_csv(DataModel.file_path)
 
         # Reduce data to the subset needed in this use case.
         mask = ["year", "country"] + list(df.columns[(df.columns.str.contains('Malignant')) & 
@@ -142,12 +142,11 @@ class CountryModel():
     """
     This class contains centroid localization for countries.
     """
-    
-    file_url = r"https://raw.githubusercontent.com/DanielPiede/ShinyDashboard/main/raw/country_centroids.csv"
-    
+    file_path = Path(__file__).parent / "country_centroids.csv"
+
     def __init__(self) -> None:
         # Loarding the data on centroids from a csv in github.
-        self.centroids = pd.read_csv(CountryModel.file_url).iloc[:,0:3]
+        self.centroids = pd.read_csv(CountryModel.file_path).iloc[:,0:3]
     
     def get_centroid(self, country: str) -> tuple:
         # Get the position for a specific country (reversed order, to match latitude and longitude on maps.)

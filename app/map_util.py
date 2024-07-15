@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-import urllib
+from pathlib import Path
 from data_util import DataModel
 
 #----------------------------------------------------------------
@@ -15,8 +15,9 @@ class GeoJTransformer():
     
     def __init__(self) -> None:
         # get the polygon data for countries from github.
-        with urllib.request.urlopen("https://raw.githubusercontent.com/DanielPiede/ShinyDashboard/main/raw/countries.geojson") as url:
-            self.data = json.load(url)
+        json_path = Path(__file__).parent / "countries.geojson"
+        with open(json_path, 'r') as f:
+            self.data = json.load(f)
         
     def get_geo_data(self) -> pd.DataFrame:
         """
