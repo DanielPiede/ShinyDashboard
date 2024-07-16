@@ -1,0 +1,12 @@
+{
+    "https://api.shinyapps.io": {
+        "server_url": "https://api.shinyapps.io",
+        "filename": "C:\\Users\\piede\\OneDrive\\Dokumente\\Code\\Shiny\\ShinyDashboard\\app",
+        "app_url": "https://anonstudent.shinyapps.io/anon/",
+        "app_id": 12322619,
+        "app_guid": null,
+        "title": "anon",
+        "app_mode": "python-shiny",
+        "app_store_version": 1
+    }
+}
